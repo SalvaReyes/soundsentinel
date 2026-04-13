@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: soundsentinel-cleanup
+  namespace: soundsentinel
+spec:
+  schedule: "15 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: cleanup
+              image: ghcr.io/your-org/soundsentinel:latest
+              imagePullPolicy: Always
+              command: ["python", "-m", "app.jobs.cleanup"]
+              envFrom:
+                - configMapRef:
+                    name: soundsentinel-config
+                - secretRef:
+                    name: soundsentinel-app-secrets

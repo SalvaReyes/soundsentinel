@@ -5,6 +5,11 @@ const statusDetail = document.getElementById("statusDetail");
 const deviceKeyInput = document.getElementById("deviceKey");
 const intervalInput = document.getElementById("intervalSeconds");
 const maxSizeInput = document.getElementById("maxSizeMb");
+const chatIdInput = document.getElementById("chatId");
+const chatLabelInput = document.getElementById("chatLabel");
+const adminTokenInput = document.getElementById("adminToken");
+const saveChatButton = document.getElementById("saveChatButton");
+const chatStatus = document.getElementById("chatStatus");
 
 let audioContext;
 let mediaStream;
@@ -17,6 +22,10 @@ let isRunning = false;
 function setStatus(text, detail) {
   statusText.textContent = text;
   statusDetail.textContent = detail || "";
+}
+
+function setChatStatus(text) {
+  chatStatus.textContent = text;
 }
 
 function clampInterval(value) {
@@ -81,6 +90,49 @@ async function sendChunk(blob, deviceKey) {
   }
 
   return response.json();
+}
+
+async function registerChatId() {
+  const chatId = chatIdInput.value.trim();
+  const label = chatLabelInput.value.trim();
+  const adminToken = adminTokenInput.value.trim();
+
+  if (!chatId) {
+    setChatStatus("Chat ID is required.");
+    return;
+  }
+
+  if (!adminToken) {
+    setChatStatus("Admin token is required.");
+    return;
+  }
+
+  const form = new FormData();
+  form.append("chat_id", chatId);
+  form.append("label", label);
+  form.append("admin_token", adminToken);
+
+  try {
+    setChatStatus("Saving chat ID...");
+    const response = await fetch("/api/v1/notifications/telegram/recipients", {
+      method: "POST",
+      body: form,
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || `HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    setChatStatus(
+      payload.created
+        ? "Chat ID registered successfully."
+        : "Chat ID updated successfully."
+    );
+  } catch (error) {
+    setChatStatus(error.message || "Failed to register chat ID.");
+  }
 }
 
 async function flushSamples() {
@@ -192,4 +244,8 @@ startButton.addEventListener("click", () => {
 
 stopButton.addEventListener("click", () => {
   stopSensor();
+});
+
+saveChatButton.addEventListener("click", () => {
+  registerChatId();
 });

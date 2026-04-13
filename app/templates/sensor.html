@@ -53,6 +53,34 @@
         </article>
 
         <article class="card">
+          <h2>Telegram Setup</h2>
+          <p class="muted">
+            Use this section to register a Telegram chat ID. The bot token
+            stays on the server; only chat IDs are stored here.
+          </p>
+          <div class="form-grid">
+            <label>
+              Chat ID
+              <input id="chatId" type="text" placeholder="123456789" />
+            </label>
+            <label>
+              Label (optional)
+              <input id="chatLabel" type="text" placeholder="Living room phone" />
+            </label>
+            <label>
+              Admin token
+              <input id="adminToken" type="password" placeholder="shared secret" />
+            </label>
+          </div>
+          <div class="button-row">
+            <button id="saveChatButton" class="primary">Save chat ID</button>
+          </div>
+          <p class="muted" id="chatStatus">No chat ID registered yet.</p>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="card card-wide">
           <h2>Tips</h2>
           <ul class="list">
             <li>Use Chrome on Android or Safari on iOS.</li>

@@ -19,6 +19,7 @@ Optional environment variables:
   SOUNDSENTINEL_POSTGRES_DB
   SOUNDSENTINEL_TELEGRAM_BOT_TOKEN
   SOUNDSENTINEL_TELEGRAM_CHAT_ID
+  SOUNDSENTINEL_SENSOR_ADMIN_TOKEN
 EOF
 }
 
@@ -40,6 +41,7 @@ POSTGRES_USER="${SOUNDSENTINEL_POSTGRES_USER:-soundsentinel}"
 POSTGRES_DB="${SOUNDSENTINEL_POSTGRES_DB:-soundsentinel}"
 TELEGRAM_BOT_TOKEN="${SOUNDSENTINEL_TELEGRAM_BOT_TOKEN:-}"
 TELEGRAM_CHAT_ID="${SOUNDSENTINEL_TELEGRAM_CHAT_ID:-}"
+SENSOR_ADMIN_TOKEN="${SOUNDSENTINEL_SENSOR_ADMIN_TOKEN:-}"
 
 REMOTE_DIR="/tmp/soundsentinel-k8s"
 
@@ -56,6 +58,7 @@ ssh "$SSH_TARGET" \
    POSTGRES_DB='$POSTGRES_DB' \
    TELEGRAM_BOT_TOKEN='$TELEGRAM_BOT_TOKEN' \
    TELEGRAM_CHAT_ID='$TELEGRAM_CHAT_ID' \
+   SENSOR_ADMIN_TOKEN='$SENSOR_ADMIN_TOKEN' \
    KUBECONFIG=\"\$HOME/.kube/config\" \
    REMOTE_DIR='$REMOTE_DIR' \
    sh -s" <<'EOF'
@@ -67,6 +70,10 @@ export KUBECONFIG="$HOME/.kube/config"
 sed -i \
   -e "s|ghcr.io/your-org/soundsentinel:latest|$IMAGE_REF|g" \
   app-deployment.yaml
+
+sed -i \
+  -e "s|ghcr.io/your-org/soundsentinel:latest|$IMAGE_REF|g" \
+  cleanup-cronjob.yaml
 
 sed -i \
   -e "s|change-me|$POSTGRES_PASSWORD|g" \
@@ -86,6 +93,7 @@ sed -i \
 sed -i \
   -e "s|SOUNDSENTINEL_TELEGRAM_BOT_TOKEN: \"\"|SOUNDSENTINEL_TELEGRAM_BOT_TOKEN: \"$TELEGRAM_BOT_TOKEN\"|g" \
   -e "s|SOUNDSENTINEL_TELEGRAM_CHAT_ID: \"\"|SOUNDSENTINEL_TELEGRAM_CHAT_ID: \"$TELEGRAM_CHAT_ID\"|g" \
+  -e "s|SOUNDSENTINEL_SENSOR_ADMIN_TOKEN: \"\"|SOUNDSENTINEL_SENSOR_ADMIN_TOKEN: \"$SENSOR_ADMIN_TOKEN\"|g" \
   app-secret.yaml
 
 if [ -n "$PUBLIC_HOST" ]; then

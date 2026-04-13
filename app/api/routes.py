@@ -2,15 +2,18 @@ from fastapi import Depends
 from fastapi import File
 from fastapi import Form
 from fastapi import APIRouter
+from fastapi import HTTPException
 from fastapi import UploadFile
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from typing import Optional
 
 from app.config import get_settings
 from app.db.session import get_db_session
+from app.models.notification_recipient import NotificationRecipient
 from app.services.dashboard import build_dashboard_snapshot
 from app.services.health import get_liveness_status
 from app.services.health import get_readiness_status
@@ -108,4 +111,43 @@ async def ingest_audio(
             }
             for delivery in deliveries
         ],
+    }
+
+
+@router.post("/api/v1/notifications/telegram/recipients")
+async def add_telegram_recipient(
+    chat_id: str = Form(...),
+    label: Optional[str] = Form(None),
+    admin_token: str = Form(...),
+    session: Session = Depends(get_db_session),
+) -> dict:
+    settings = get_settings()
+
+    if not settings.sensor_admin_token:
+        raise HTTPException(status_code=503, detail="Sensor admin token is not configured.")
+
+    if admin_token != settings.sensor_admin_token:
+        raise HTTPException(status_code=403, detail="Invalid admin token.")
+
+    existing = session.scalar(
+        select(NotificationRecipient).where(NotificationRecipient.chat_id == chat_id)
+    )
+
+    if existing:
+        existing.label = label or existing.label
+        existing.enabled = True
+        recipient = existing
+        created = False
+    else:
+        recipient = NotificationRecipient(chat_id=chat_id, label=label)
+        session.add(recipient)
+        created = True
+
+    session.commit()
+
+    return {
+        "status": "ok",
+        "created": created,
+        "chat_id": recipient.chat_id,
+        "label": recipient.label,
     }

@@ -44,6 +44,7 @@ kubectl logs deployment/soundsentinel-app -n soundsentinel
 - It is good for learning and a first VPS deployment, not high availability.
 - K3s already includes Traefik by default, which is why the ingress is minimal.
 - If you do not have a domain yet, the deployment helper script can switch the ingress to a hostless rule so you can enter through the VPS IP.
+- A cleanup CronJob runs daily and removes data older than the configured retention days.
 
 ## Helper Scripts
 
