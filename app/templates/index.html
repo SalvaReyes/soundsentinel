@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="hero">
+        <p class="eyebrow">Phase 6 operational dashboard</p>
+        <h1>{{ app_name }}</h1>
+        <p class="lead">
+          A self-hosted audio monitoring platform for learning containerization,
+          Kubernetes, CI/CD, and system operations step by step.
+        </p>
+      </section>
+
+      <section class="stats-grid">
+        <article class="card">
+          <p class="stat-label">Devices</p>
+          <p class="stat-value">{{ snapshot.totals.devices }}</p>
+        </article>
+
+        <article class="card">
+          <p class="stat-label">Samples</p>
+          <p class="stat-value">{{ snapshot.totals.samples }}</p>
+        </article>
+
+        <article class="card">
+          <p class="stat-label">Alerts</p>
+          <p class="stat-value">{{ snapshot.totals.alerts }}</p>
+        </article>
+
+        <article class="card">
+          <p class="stat-label">Deliveries</p>
+          <p class="stat-value">{{ snapshot.totals.deliveries }}</p>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="card card-wide">
+          <h2>Sensor Status</h2>
+          {% if snapshot.devices %}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Device</th>
+                  <th>Status</th>
+                  <th>Last Seen</th>
+                  <th>Latest RMS</th>
+                  <th>Latest Peak</th>
+                  <th>Samples</th>
+                  <th>Alerts</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for device in snapshot.devices %}
+                <tr>
+                  <td>
+                    <strong>{{ device.display_name }}</strong><br />
+                    <span class="muted">{{ device.device_key }}</span>
+                  </td>
+                  <td>
+                    <span class="status-pill status-{{ device.status }}">{{ device.status }}</span>
+                  </td>
+                  <td>{{ device.last_seen_at }}</td>
+                  <td>{{ device.latest_rms }}</td>
+                  <td>{{ device.latest_peak }}</td>
+                  <td>{{ device.sample_count }}</td>
+                  <td>{{ device.alert_count }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="empty-state">No sensors have reported data yet.</p>
+          {% endif %}
+        </article>
+
+        <article class="card">
+          <h2>Environment</h2>
+          <p><strong>Mode:</strong> {{ environment }}</p>
+          <p><strong>Version:</strong> {{ version }}</p>
+          <p><strong>Endpoint:</strong> <code>POST /api/v1/audio/ingestions</code></p>
+          <p><strong>Format:</strong> PCM WAV</p>
+          <p><strong>Rules:</strong> spike, sustained noise, repeated peaks</p>
+          <p><strong>Delivery:</strong> Telegram with safe fallback</p>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="card card-wide">
+          <h2>Recent Samples</h2>
+          {% if snapshot.recent_samples %}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Device</th>
+                  <th>Measured At</th>
+                  <th>RMS</th>
+                  <th>Peak</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sample in snapshot.recent_samples %}
+                <tr>
+                  <td>{{ sample.device_name }}</td>
+                  <td>{{ sample.measured_at }}</td>
+                  <td>{{ sample.normalized_rms }}</td>
+                  <td>{{ sample.normalized_peak }}</td>
+                  <td>{{ sample.duration_seconds }}s</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="empty-state">No sound samples available yet.</p>
+          {% endif %}
+        </article>
+
+        <article class="card">
+          <h2>Recent Alerts</h2>
+          {% if snapshot.recent_alerts %}
+          <div class="feed">
+            {% for alert in snapshot.recent_alerts %}
+            <article class="feed-item">
+              <p class="feed-meta">{{ alert.triggered_at }} · {{ alert.device_name }}</p>
+              <p><strong>{{ alert.type }}</strong> · {{ alert.severity }}</p>
+              <p class="muted">{{ alert.message }}</p>
+            </article>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="empty-state">No alerts generated yet.</p>
+          {% endif %}
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="card card-wide">
+          <h2>Notification Deliveries</h2>
+          {% if snapshot.recent_deliveries %}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created At</th>
+                  <th>Channel</th>
+                  <th>Status</th>
+                  <th>Recipient</th>
+                  <th>Alert Type</th>
+                  <th>Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for delivery in snapshot.recent_deliveries %}
+                <tr>
+                  <td>{{ delivery.created_at }}</td>
+                  <td>{{ delivery.channel }}</td>
+                  <td>
+                    <span class="status-pill status-{{ delivery.status }}">{{ delivery.status }}</span>
+                  </td>
+                  <td>{{ delivery.recipient }}</td>
+                  <td>{{ delivery.alert_type }}</td>
+                  <td class="muted">{{ delivery.error_message }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="empty-state">No notification deliveries recorded yet.</p>
+          {% endif %}
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

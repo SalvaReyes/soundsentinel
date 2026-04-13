@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soundsentinel-app
+  namespace: soundsentinel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soundsentinel-app
+  template:
+    metadata:
+      labels:
+        app: soundsentinel-app
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/your-org/soundsentinel:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: soundsentinel-config
+            - secretRef:
+                name: soundsentinel-app-secrets
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+

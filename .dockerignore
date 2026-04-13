@@ -1,0 +1,12 @@
+.git
+.github
+.venv
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.pycache_tmp
+test_soundsentinel.db
+tmp
+infra/k8s
+
