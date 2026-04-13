@@ -179,6 +179,85 @@ th {
   color: var(--muted);
 }
 
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin: 1rem 0 1.5rem;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  gap: 0.5rem;
+}
+
+.form-grid input {
+  background: #fffaf0;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.primary,
+.secondary {
+  border: none;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary {
+  background: #f1c176;
+  color: #3a2a1f;
+}
+
+.secondary {
+  background: #efe4d3;
+  color: #3a2a1f;
+}
+
+.primary:disabled,
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f1c176;
+  color: #3a2a1f;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.status-box {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: #fffaf0;
+  border: 1px solid var(--border);
+}
+
+.list {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.1rem;
+}
+
 @media (max-width: 800px) {
   .card-wide {
     grid-column: span 1;

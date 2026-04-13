@@ -37,6 +37,18 @@ async def dashboard(
     return templates.TemplateResponse(request, "index.html", context)
 
 
+@router.get("/sensor", response_class=HTMLResponse)
+async def sensor(request: Request) -> HTMLResponse:
+    settings = get_settings()
+    context = {
+        "request": request,
+        "app_name": settings.app_name,
+        "environment": settings.environment,
+        "version": settings.app_version,
+    }
+    return templates.TemplateResponse(request, "sensor.html", context)
+
+
 @router.get("/health")
 async def health() -> dict:
     return get_liveness_status()

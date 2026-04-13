@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }} · Sensor</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="hero">
+        <p class="eyebrow">Sensor mode</p>
+        <h1>{{ app_name }}</h1>
+        <p class="lead">
+          Use this page on your mobile to send short audio fragments automatically.
+        </p>
+      </section>
+
+      <section class="grid">
+        <article class="card card-wide">
+          <h2>Mobile Sensor</h2>
+          <p class="muted">
+            Keep this tab open. The microphone permission is required. Audio is
+            captured in short WAV chunks and sent to the server.
+          </p>
+
+          <div class="form-grid">
+            <label>
+              Device key
+              <input id="deviceKey" type="text" placeholder="living-room-phone" />
+            </label>
+
+            <label>
+              Interval (seconds)
+              <input id="intervalSeconds" type="number" min="2" max="30" value="5" />
+            </label>
+
+            <label>
+              Max upload size (MB)
+              <input id="maxSizeMb" type="number" min="0.5" max="5" step="0.5" value="2" />
+            </label>
+          </div>
+
+          <div class="button-row">
+            <button id="startButton" class="primary">Start sensor</button>
+            <button id="stopButton" class="secondary" disabled>Stop</button>
+          </div>
+
+          <div class="status-box">
+            <p><strong>Status:</strong> <span id="statusText">Idle</span></p>
+            <p class="muted" id="statusDetail">No audio has been sent yet.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Tips</h2>
+          <ul class="list">
+            <li>Use Chrome on Android or Safari on iOS.</li>
+            <li>Keep the screen on and the tab in the foreground.</li>
+            <li>Start with 5 seconds per chunk to balance bandwidth and alerts.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+
+    <script src="/static/js/sensor.js"></script>
+  </body>
+</html>
