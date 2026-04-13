@@ -148,7 +148,8 @@ def test_audio_ingestion_records_successful_telegram_delivery(client, monkeypatc
         telegram_api_base_url = "https://example.invalid"
         notification_request_timeout_seconds = 10
 
-    def fake_send_telegram_message(text: str) -> tuple[int, dict]:
+    def fake_send_telegram_message(chat_id: str, text: str) -> tuple[int, dict]:
+        assert chat_id == "123456"
         assert "SoundSentinel alert" in text
         return 200, {"result": {"message_id": 42}}
 
